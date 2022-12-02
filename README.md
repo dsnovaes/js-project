@@ -21,7 +21,7 @@ Navigate through the slides to see the prices of the product in each country. Cl
 HTML, CSS and Javascript
 
 ## Libraries
-[D3] https://d3js.org/
+[D3] (https://d3js.org/)
 
 ## Technical Implementation
 
