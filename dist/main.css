@@ -1,0 +1,261 @@
+/*!*************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/sass-loader/dist/cjs.js!./src/index.scss ***!
+  \*************************************************************************************************************************************/
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+  box-sizing: content-box;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+:root {
+  --color-primary:#333;
+  --color-aa:#d0021b;
+  --color-grey:#666;
+  --color-transparent-black:rgba(0,0,0,0.15);
+  --color-transparent-black-light:rgba(0,0,0,0.05);
+  --color-transparent-white:rgba(255,255,255,0.5);
+  --color-gradient-black:linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+::selection {
+  background: var(--color-primary);
+  color: #fff;
+  text-shadow: none;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #fff;
+  color: var(--color-primary);
+  scroll-snap-type: y proximity;
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-flow: column nowrap;
+}
+
+a:hover, button:hover {
+  cursor: pointer;
+  transition: 0.25s all;
+}
+
+#splash-screen {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 100px 1fr;
+}
+
+header {
+  width: 100vw;
+  height: 100px;
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  align-content: center;
+  justify-content: space-between;
+}
+
+#exchangeStatus {
+  display: flex;
+  align-content: center;
+  justify-content: flex-start;
+  padding-left: 30px;
+  font-size: 12px;
+}
+
+#exchangeStatus button {
+  display: none;
+  padding: 15px 30px;
+  border-radius: 30px;
+  border: 2px solid var(--color-primary);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  background: #fff;
+  transition: 0.25s all;
+}
+
+#exchangeStatus:hover button {
+  display: block;
+}
+
+#exchangeStatus:hover button:hover {
+  color: #fff;
+  background-color: var(--color-primary);
+}
+
+/* animate icon when updating currencies */
+@keyframes rotate360 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.rotate {
+  animation: 2s rotate360 infinite linear;
+}
+
+#exchangeStatus .msg {
+  align-self: center;
+}
+
+#exchangeStatus:hover .msg {
+  display: none;
+}
+
+.center {
+  text-align: center;
+  align-content: center;
+  display: grid;
+  grid-template-columns: 1fr 50px 1fr;
+}
+
+.center p {
+  align-self: center;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.center p.author {
+  text-align: right;
+  margin-right: 15px;
+}
+
+.center p.cohort {
+  text-align: left;
+  margin-left: 15px;
+}
+
+.center p.appacademy a {
+  text-indent: -99999px;
+  width: 50px;
+  height: 50px;
+  display: block;
+  background: url("/assets/img/aa-logo.svg") 0 0 no-repeat;
+  transition: none;
+}
+
+.center :nth-child(2) a:hover {
+  background-position: bottom;
+  transition: none;
+}
+
+.icons {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+.icons p {
+  font-size: 36px;
+}
+
+.icons a {
+  color: var(--color-transparent-black);
+  margin-right: 30px;
+}
+
+.icons a:hover {
+  color: var(--color-grey);
+}
+
+.headline {
+  display: grid;
+  align-self: center;
+  justify-content: center;
+}
+
+h1 {
+  font-weight: 900;
+  font-size: 88px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+}
+
+.headline p {
+  font-size: 120px;
+}
+
+.headline button {
+  padding: 15px 60px;
+  width: 200px;
+  border-radius: 30px;
+  transition: 0.25s all;
+  border: 2px solid var(--color-primary);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  background: #fff;
+}
+
+.headline button:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+#products div {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+}
+
+#products h2 {
+  opacity: 0.5;
+}
