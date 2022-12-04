@@ -1,24 +1,21 @@
+import * as charts from "./scripts/charts"
+import * as staticData from "./scripts/data"
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // updates the currencies
     // still needs to have a logic that if it fails, 
     // the variable should have static values
 
-    const exchangeRatesStatic = {
-        "quotes": {
-            "USDBRL": 5.185203,
-            "USDCNY": 7.054298,
-            "USDEUR": 0.94975,
-            "USDINR": 81.180497,
-            "USDRUB": 61.715006
-        },
-        "source": "USD",
-        "success": true,
-        "timestamp": 1669964283
-    }
-
+    const btnUpdate = document.querySelector("#exchangeStatus button")
+    btnUpdate.addEventListener("click",updateCurrencies)
 
     function updateCurrencies() {
+        let icon = document.querySelector("#exchangeStatus button i")
+        const btnUpdateText = document.querySelector("#exchangeStatus button span")
+        icon.classList.add("rotate")
+        btnUpdateText.textContent = "Updating currencies"
+
         // keep this false to save requests
         // change to true to fetch from the API
         let fetching = false;
@@ -43,177 +40,211 @@ document.addEventListener("DOMContentLoaded", () => {
                     exchangeRates = exchangeRatesStatic 
                     console.error('error', error)
                 });
-
+            icon.classList.remove("rotate")
+            btnUpdateText.textContent = "Update currencies"
             return exchangeRates
         } else {
             console.log("exchange rates (not) updated")
+            icon.classList.remove("rotate")
+            btnUpdateText.textContent = "Update currencies"
             return exchangeRatesStatic
         }
+        
     }
 
-    function fetchingAPI() {
-        // keep this false to save requests
-        let fetching = true;
-        // change to true to fetch from the API
-        var resultStatic = "bla bla bla"
-        let resultFromFetch = {}
-
-        if (fetching) {
-            var baseURL = "https://api.emailable.com/v1/verify?email=dnovaes@ftc.edu.br&api_key="
-            var requestOptions = {
-                method: 'GET'
-            };
-            var apikey = "test_90f87cd6d7112599232c"
-            fetch(`${baseURL}${apikey}`)
-                .then(response => response.json())
-                .then(result => {
-                    console.log("exchange rates updated", result)
-                    resultFromFetch = result
-                })
-                .catch((error) => {
-                    // makes sure that result will have rates
-                    resultFromFetch = resultStatic 
-                    console.error('error', error)
-                });
-        } else {
-            console.log("exchange rates (not) updated")
-        }
-            console.log("printing result",resultFromFetch)
-            return resultFromFetch
-    }
+    
 
 
-    // static data
-
-    const countries = ["Brazil", "China", "India", "Spain", "Russia", "USA"]
-
-    const products = {
-        mcchicken: {
-            prices: {
-                "BRL": 20.90,
-                "CNY": 12,
-                "EUR": 4.58,
-                "INR": 112,
-                "RUB": 100
-            },
-            primaryColor: "#FFC72C",
-            secondaryColor: "#27251F",
-            title: "Mc Chicken",
-            subtitle: "Burger only, not the meal",
-            imageOffset: null
-        },
-        corolla: {
-            prices: {
-                "BRL": 147790,
-                "CNY": 120000,
-                "EUR": 22100,
-                "INR": 1646000,
-                "RUB": 2032000
-            },
-            primaryColor: "#fff",
-            secondaryColor: "#EB0A1E",
-            title: "Toyota Corolla",
-            subtitle: "2022 model, entry version",
-            imageOffset: null
-        },
-        jeans: {
-            prices: {
-                "BRL": 460,
-                "CNY": 439,
-                "EUR": 110,
-                "INR": 8500,
-                "RUB": 8600
-            },
-            primaryColor: "#C41230",
-            secondaryColor: "#fff",
-            title: "Levi's Jeans",
-            subtitle: "501® Original Fit Jeans",
-            imageOffset: null
-        },
-        iphone: {
-            prices: {
-                "BRL": 9499,
-                "CNY": 7999,
-                "EUR": 1319,
-                "INR": 129900,
-                "RUB": 99990
-            },
-            primaryColor: "#000",
-            secondaryColor: "#fff",
-            title: "iPhone",
-            subtitle: "iPhone 14 Pro 128GB",
-            imageOffset: null
-        },
-        coke: {
-            prices: {
-                "BRL": 3.99,
-                "CNY": 9.975, // 4-pack price, divided by 4 (39.9/4)
-                "EUR": 1.95,
-                "INR": 65,
-                "RUB": 51.85
-            },
-            primaryColor: "#F40009",
-            secondaryColor: "#fff",
-            title: "Coke",
-            subtitle: "1L (33oz) bottle",
-            imageOffset: null
-        }
-    }
-    window.products = products;
-
-    // national average minimum wage: 22 CNY per hour
-    // national average is about 5000 CNY per month
-
-    const minimumWage = {
-        "BRL": 1212,
-        "CNY": 3872, // yuan / rmb => ChiNeseYuan
-        "EUR": 1050,
-        "INR": 9306,
-        "RUB": 13617
-    }
 
 
     // populate section "products"
     function populateProducts() {
-        console.log("populating products")
         const productsContainer = document.getElementById("products")
-        Object.entries(products).forEach((product) => {
-            console.log("now populating " + product[1].title)
-            const div = document.createElement("div");
-            div.setAttribute("id",product[0])
+        Object.entries(staticData.products).forEach((product,index) => {
+            // creates the main div of a product
+            const div = document.createElement("section");
+            div.setAttribute("id",`product-${index}`)
             div.setAttribute("style",`background-color:${product[1].primaryColor};color:${product[1].secondaryColor}`)
+
+            // creates elements and populates them
+            const asideInfo = document.createElement("aside")
+            asideInfo.setAttribute("class","info")
+            const asideGraphs = document.createElement("aside")
+            asideGraphs.setAttribute("class","graphs")
             const h1 = document.createElement("h1")
             h1.innerHTML = product[1].title
-            div.appendChild(h1)
             const h2 = document.createElement("h2")
             h2.innerHTML = product[1].subtitle
-            div.appendChild(h2)
+            const image = document.createElement("img")
+            image.setAttribute("src",`assets/img/${product[0]}.png`)
+            image.setAttribute("alt",product[1].title) // for accessibility purposes
+
+            // appends elements to asideInfo
+            asideInfo.appendChild(h1)
+            asideInfo.appendChild(h2)
+            asideInfo.appendChild(image)
+
+
+            // creates the 'previous' button if it isn't the first element
+            if (index !== 0) {
+                const btnPrevious = document.createElement("button")
+                btnPrevious.setAttribute("style",`background-color:${product[1].primaryColor};color:${product[1].secondaryColor};border:1px solid ${product[1].secondaryColor};border-radius:5px;margin-right:15px;`)
+                btnPrevious.innerHTML = '<i class="fa-solid fa-arrow-left"></i>'
+                asideInfo.appendChild(btnPrevious)
+
+                btnPrevious.addEventListener("click",function (e) {
+                    e.preventDefault();
+                    document.getElementById(`product-${index-1}`).scrollIntoView();
+                })
+            }
+
+            // creates the 'next' button if it isn't the last element
+            if (index !== Object.entries(staticData.products).length-1) {
+                const btnNext = document.createElement("button")
+                btnNext.setAttribute("style",`background-color:${product[1].secondaryColor};color:${product[1].primaryColor};border-radius:5px;border:0;`)
+                btnNext.innerHTML = 'Next <i class="fa-solid fa-arrow-right" style="margin-left:30px;"></i>'
+                asideInfo.appendChild(btnNext)
+
+                btnNext.addEventListener("click",function (e) {
+                    e.preventDefault();
+                    document.getElementById(`product-${index+1}`).scrollIntoView();
+                })
+            }
+
+            // creates the 'back to top' button if it is the last element
+            if (index === Object.entries(staticData.products).length-1) {
+                const btnTop = document.createElement("button")
+                btnTop.setAttribute("style",`
+                    background-color:${product[1].primaryColor};
+                    color:${product[1].secondaryColor};
+                    border-radius:5px;
+                    border:1px solid ${product[1].secondaryColor};`)
+                btnTop.innerHTML = 'Back to top <i class="fa-solid fa-arrow-up" style="margin-left:15px;"></i>'
+                asideInfo.appendChild(btnTop)
+
+                btnTop.addEventListener("click",function (e) {
+                    e.preventDefault();
+                    document.getElementById("splash-screen").scrollIntoView();
+                })
+            }
+
+            // creates the tabs naviagations and panels on the right
+            const navTabs = document.createElement("nav")
+            div.appendChild(asideGraphs)
+            let chartPanel = document.createElement("div")
+            chartPanel.classList.add(`product-${index}-panel`)
+
+            for (let i = 0; i < 3; i ++) {
+                let btnTab = document.createElement("button")
+                let divTab = document.createElement("div")
+                btnTab.setAttribute("data-id",`product-${index}-tab-${i}`)
+                if (i === 0) {
+                    // creates the button
+                    btnTab.innerHTML = "price"
+                    btnTab.classList.add(`tab-${index}`)
+                    btnTab.classList.add("selected")
+                    btnTab.setAttribute("style",`
+                        background-color:${product[1].primaryColor};
+                        color:${product[1].secondaryColor};
+                        border:1px solid ${product[1].secondaryColor};
+                        border-radius:5px 0 0 5px;`)
+
+                    // creates the panel
+                    divTab.setAttribute("id",`product-${index}-tab-${i}`)
+                    divTab.classList.add("selected")
+                    divTab.innerHTML = `content for prices tab`
+                    chartPanel.appendChild(divTab)
+
+                } else if (i === 1) {
+                    // creates the button
+                    btnTab.innerHTML = "% minimum wage"
+                    btnTab.classList.add(`tab-${index}`)
+                    btnTab.setAttribute("style",`
+                        background-color:${product[1].primaryColor};
+                        color:${product[1].secondaryColor};
+                        border:1px solid ${product[1].secondaryColor};
+                        border-left:0;
+                        border-right:0;
+                        border-radius:0;`)
+
+                    // creates the panel
+                    divTab.setAttribute("id",`product-${index}-tab-${i}`)
+                    divTab.classList.add("hidden")
+                    divTab.innerHTML = `content for % minimum wage tab`
+                    chartPanel.appendChild(divTab)
+
+                } else if (i === 2) {
+                    // creates the button
+                    btnTab.innerHTML = "days to buy"
+                    btnTab.classList.add(`tab-${index}`)
+                    btnTab.setAttribute("style",`
+                        background-color:${product[1].primaryColor};
+                        color:${product[1].secondaryColor};
+                        border:1px solid ${product[1].secondaryColor};
+                        border-radius:0 5px 5px 0;`)
+
+                    // creates the panel
+                    divTab.setAttribute("id",`product-${index}-tab-${i}`)
+                    divTab.classList.add("hidden")
+                    divTab.innerHTML = `content for days of work tab`
+                    chartPanel.appendChild(divTab)
+
+                }
+                
+                navTabs.appendChild(btnTab)
+            }
+            asideGraphs.appendChild(navTabs)
+            asideGraphs.appendChild(chartPanel)
+
+            // logic to set 'selected' when a tab is clicked
+            navTabs.addEventListener("click",(e) => {
+                // lists all tabs of the product and removes 'selected' class
+                const buttons = document.querySelectorAll(`#product-${index} nav button`) 
+                Object.values(buttons).forEach(btn => btn.classList.remove("selected"))
+
+                // lists all tab panels of the product and removes 'selected' class
+                const tabs = document.querySelectorAll(`.product-${index}-panel div`) 
+                Object.values(tabs).forEach(tab => tab.classList.add("hidden"))
+                Object.values(tabs).forEach(tab => tab.classList.remove("selected"))
+
+                // enables 'selected' only to the clicked tab and panel
+                e.target.classList.add("selected")
+                document.getElementById(e.path[0].attributes[0].value).classList.remove("hidden")
+                document.getElementById(e.path[0].attributes[0].value).classList.add("selected")
+            })
+
+            // appends asideInfo to div and div to container
+            div.appendChild(asideInfo)
+            div.appendChild(asideGraphs)
             productsContainer.appendChild(div)
 
-            const ul = document.createElement("ul")
-            div.appendChild(ul)
-            const productPrices = listPrices(product)
-            productPrices.forEach((price)=>{
-                const li = document.createElement("li")
-                li.innerHTML = price;
-                ul.appendChild(li)
-            })
+            // const ul = document.createElement("ul")
+            // div.appendChild(ul)
+            // const productPrices = listPrices(product)
+            // productPrices.forEach((price)=>{
+            //     const li = document.createElement("li")
+            //     li.innerHTML = price;
+            //     ul.appendChild(li)
+            // })
 
         })
     }
 
-
-
-    function repopulateAfterUpdateCurrencies() {
-        // updateCurrencies()
-        populateProducts()
-    }
-    const btnUpdate = document.querySelector("header button")
-    // btnUpdate.addEventListener("click",repopulateAfterUpdateCurrencies)
     populateProducts()
-    btnUpdate.addEventListener("click",() =>{
-        const resultFromClick = fetchingAPI()
-        console.log(resultFromClick)
+
+
+    // creates a listener to the "start" button
+    const btnStart = document.querySelector(".headline button")
+    const initialProduct = document.getElementById("product-0")
+    btnStart.addEventListener("click",function (e) {
+        e.preventDefault();
+        initialProduct.scrollIntoView();
+    })
+
+    // creates a listener so the footer becomes a link back to the top
+    const footer = document.querySelector("footer")
+    footer.addEventListener("click",function (e) {
+        document.getElementById("splash-screen").scrollIntoView();
     })
 
     // formats the timestamp
@@ -255,20 +286,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // swapping country names
     var i = 0;
     var text = "USA";
-    document.querySelector("h2 span").innerHTML = countries.length;
+    document.querySelector(".headline h2 span").innerHTML = staticData.countries.length;
     function _getChangedText() {
-        i = (i + 1) % countries.length;
+        i = (i + 1) % staticData.countries.length;
         // console.log(countries[i]);
         // console.log(i);
-        return text.replace(/USA/, countries[i]);
+        return text.replace(/USA/, staticData.countries[i]);
     }
     function _changeText() {
         var txt = _getChangedText();
         // console.log(txt);
-        document.querySelector("h1 span").innerHTML = txt;
+        document.querySelector(".headline h1 span").innerHTML = txt;
     }
     setInterval(_changeText, 2500);
 
-    {/* <span id="changer">This is cool</span> */}
 
 });

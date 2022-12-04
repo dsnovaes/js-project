@@ -12,27 +12,27 @@
     color: #fff;
     text-shadow: none;
 }
+html {
+    scroll-behavior: smooth;
+}
 body {
+    height: 100vh;
+    overflow: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
     font-family: 'Roboto', sans-serif;
     background-color: #fff;
     color: var(--color-primary);
-    scroll-snap-type: y proximity;
-    height: 100%;
-}
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-flow: column nowrap;
 }
 a:hover, button:hover {
-    cursor:pointer;
+    cursor: pointer;
     transition: 0.25s all;
 }
 #splash-screen {
-    width:100vw ;
     height: 100vh;
     display: grid;
+    scroll-snap-align: start;
+    width:100vw ;
     grid-template-rows: 100px 1fr;
 }
 header {
@@ -107,7 +107,7 @@ header {
     background:url("/assets/img/aa-logo.svg") 0 0 no-repeat;
     transition: none;
 }
-.center :nth-child(2) a:hover {
+.center p.appacademy a:hover {
     background-position: bottom;
     transition: none;
 }
@@ -117,7 +117,7 @@ header {
     align-items: center;
 }
 .icons p {
-    font-size: 36px;
+    font-size: 32px;
 }
 .icons a {
     color: var(--color-transparent-black);
@@ -134,24 +134,24 @@ header {
 
 h1 {
     font-weight: 900;
-    font-size: 88px;
+    font-size: 5vw;
     line-height: 1;
     letter-spacing: -0.03em;
 }
 h2 {
-    font-size: 24px;
+    font-size: 2vw;
     margin-bottom: 30px;
 }
 .headline p {
-    font-size: 120px;
+    font-size: 8vw;
 }
 .headline button {
-    padding: 15px 60px;
-    width:200px;
-    border-radius: 30px;
+    padding: 15px 4vw;
+    width:14vw;
+    border-radius: 40px;
     transition: 0.25s all;
     border: 2px solid var(--color-primary);
-    font-size: 26px;
+    font-size: 2vw;
     font-weight: 400;
     letter-spacing: -0.01em;
     background: #fff;
@@ -160,12 +160,72 @@ h2 {
     background-color: var(--color-primary);
     color: #fff;
 }
-#products div {
-    width:100vw ;
+#products section {
     height: 100vh;
-    overflow: auto;
-    // padding: 60px;
+    display: grid;
+    scroll-snap-align: start;
+    width:100vw;
+    grid-template-columns: 1fr 2fr;
+}
+#products section aside.info {
+    padding: 60px 30px 0px 60px;
+    // border:1px solid red;
+}
+#products section aside.graphs {
+    padding: 60px 60px 0px 30px;
+    // border:1px solid red;
 }
 #products h2 {
     opacity: 0.5;
+}
+#products .info img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 30px;
+    max-height: 60vh;
+    display: block;
+}
+#products .info button {
+    padding:20px;
+    font-size: 18px;
+}
+#products .info button:hover {
+    opacity: 0.75;
+}
+#products .graphs nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 60px;
+}
+#products .graphs nav button {
+    padding:10px 30px;
+    font-size: 18px;
+}
+#products .graphs nav button:hover {
+    background-color: #fff !important;
+    color: var(--color-primary) !important;
+}
+#products .graphs nav button.selected {
+    background-color: var(--color-primary) !important;
+    color: #fff !important;
+    font-weight: 900;
+}
+
+#products .graphs > div > div.hidden {
+    display: none;
+}
+#products .graphs > div > div.selected {
+    display: block;
+}
+footer {
+    height: 100vh;
+    display: flex;
+    scroll-snap-align: start;
+    background-color: var(--color-primary);
+    width: 100vw;
+    align-items: center;
+    color: var(--color-transparent-black);
+    justify-content: center;
+    font-size: 5vw;
+    font-weight: 900;
 }
