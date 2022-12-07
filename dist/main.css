@@ -262,7 +262,7 @@ h2 {
   padding: 60px 30px 0px 60px;
 }
 
-#products section aside.graphs {
+#products section aside.charts {
   padding: 60px 60px 0px 30px;
 }
 
@@ -287,34 +287,47 @@ h2 {
   opacity: 0.75;
 }
 
-#products .graphs nav {
+#products .charts nav {
   display: flex;
   justify-content: center;
   margin-bottom: 60px;
 }
 
-#products .graphs nav button {
+#products .charts nav button {
   padding: 10px 30px;
   font-size: 18px;
 }
 
-#products .graphs nav button:hover {
+#products .charts nav button:hover {
   background-color: #fff !important;
   color: var(--color-primary) !important;
 }
 
-#products .graphs nav button.selected {
+#products .charts nav button.selected {
   background-color: var(--color-primary) !important;
   color: #fff !important;
   font-weight: 900;
 }
 
-#products .graphs > div > div.hidden {
+#products .charts > div > div.hidden {
   display: none;
 }
 
-#products .graphs > div > div.selected {
+#products .charts > div > div.selected {
   display: block;
+}
+
+.tabPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabPanel svg {
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  height: auto;
 }
 
 footer {

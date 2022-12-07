@@ -1,76 +1,101 @@
-import * as charts from "./scripts/charts"
 import * as staticData from "./scripts/data"
+import Chart from 'chart.js/auto';
 
 document.addEventListener("DOMContentLoaded", () => {
+    // formats the timestamp
+    const formattedTimestamp = (timestamp) => {
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        let date = new Date(timestamp * 1000);
+        // Hours part from the timestamp
+        let hours = date.getHours();
+        // Minutes part from the timestamp
+        let minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        let seconds = "0" + date.getSeconds();
+        // Will display time in 10:30:23 format
+        let formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+        document.querySelector("#exchangeStatus strong").innerHTML = formattedTime;
+        return formattedTime;
+    }
 
-    // updates the currencies
-    // still needs to have a logic that if it fails, 
-    // the variable should have static values
+    let currencies = JSON.parse(localStorage.getItem("currencies")) || {};
 
-    const btnUpdate = document.querySelector("#exchangeStatus button")
-    btnUpdate.addEventListener("click",updateCurrencies)
+    async function fetchAndUpdate(shouldForce = false) {
 
-    function updateCurrencies() {
-        let icon = document.querySelector("#exchangeStatus button i")
-        const btnUpdateText = document.querySelector("#exchangeStatus button span")
-        icon.classList.add("rotate")
-        btnUpdateText.textContent = "Updating currencies"
+        let myCookie = document.cookie;
 
-        // keep this false to save requests
-        // change to true to fetch from the API
-        let fetching = false;
-        if (fetching) {
-            var myHeaders = new Headers();
+        // checks if there is a cookie
+        if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) {
+            // if there's a cookie, then do nothing
+            console.log("cookie found", myCookie)
+            // console.log("currencies before the fetch",JSON.stringify(currencies))
+        } else {
+            // if there isn't a cookie, creates the cookie 
+            console.warn("cookie not found")
+            const end = new Date();
+            end.setHours(23, 59, 59, 999);
+            const end2 = new Date();
+            end2.setDate(end.getDate() + 1)
+            document.cookie = `currenciesUpdated=true;expires=${end2}; path=/`;
+            // document.cookie = "currenciesUpdated=true;expires=;path=/";
+            if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) { console.warn("cookie created") }
+        }
+
+        // if shouldForce is set to true then fetch the api 
+        // and update currencies in the local storage
+        if (shouldForce) {
+            let myHeaders = new Headers();
             myHeaders.append("apikey", "i6Gvyy6na70P0E5YGt4d2FyO7dlu59mk");
-            let exchangeRates = {}
-            var requestOptions = {
+
+            let requestOptions = {
                 method: 'GET',
                 redirect: 'follow',
                 headers: myHeaders
             };
 
-            fetch("https://api.apilayer.com/currency_data/live?source=USD&currencies=BRL%2CEUR%2CINR%2CRUB%2CCNY", requestOptions)
+            await fetch("https://api.apilayer.com/currency_data/live?source=USD&currencies=BRL%2CEUR%2CINR%2CRUB%2CCNY", requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                    console.log("exchange rates updated")
-                    exchangeRates = result
+                    console.log("fetching api and setting the results to local storage")
+                    localStorage.setItem('currencies', JSON.stringify(result))
+                    formattedTimestamp(currencies.timestamp)
+                    console.log("exchange rates updated in local storage")
+                    return JSON.stringify(result)
                 })
                 .catch((error) => {
-                    // makes sure that exchangeRates will have rates
-                    exchangeRates = exchangeRatesStatic 
                     console.error('error', error)
                 });
-            icon.classList.remove("rotate")
-            btnUpdateText.textContent = "Update currencies"
-            return exchangeRates
         } else {
-            console.log("exchange rates (not) updated")
-            icon.classList.remove("rotate")
-            btnUpdateText.textContent = "Update currencies"
-            return exchangeRatesStatic
+            console.warn("exchange rates (not) updated")
+            return currencies
         }
+
         
     }
 
-    
-
-
-
+    let btnUpdate = document.querySelector("header button")
+    btnUpdate.addEventListener("click",(e)=>{
+        e.preventDefault();
+        currencies = fetchAndUpdate(true)
+    })
 
     // populate section "products"
     function populateProducts() {
         const productsContainer = document.getElementById("products")
+        productsContainer.innerHTML = "";
+
         Object.entries(staticData.products).forEach((product,index) => {
             // creates the main div of a product
-            const div = document.createElement("section");
-            div.setAttribute("id",`product-${index}`)
-            div.setAttribute("style",`background-color:${product[1].primaryColor};color:${product[1].secondaryColor}`)
+            const section = document.createElement("section");
+            section.setAttribute("id",`product-${index}`)
+            section.setAttribute("style",`background-color:${product[1].primaryColor};color:${product[1].secondaryColor}`)
 
             // creates elements and populates them
             const asideInfo = document.createElement("aside")
             asideInfo.setAttribute("class","info")
-            const asideGraphs = document.createElement("aside")
-            asideGraphs.setAttribute("class","graphs")
+            const asideCharts = document.createElement("aside")
+            asideCharts.setAttribute("class","charts")
             const h1 = document.createElement("h1")
             h1.innerHTML = product[1].title
             const h2 = document.createElement("h2")
@@ -83,7 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
             asideInfo.appendChild(h1)
             asideInfo.appendChild(h2)
             asideInfo.appendChild(image)
-
 
             // creates the 'previous' button if it isn't the first element
             if (index !== 0) {
@@ -128,9 +152,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
             }
 
-            // creates the tabs naviagations and panels on the right
+            // creates the tabs navigations and panels on the right
             const navTabs = document.createElement("nav")
-            div.appendChild(asideGraphs)
+            section.appendChild(asideCharts)
             let chartPanel = document.createElement("div")
             chartPanel.classList.add(`product-${index}-panel`)
 
@@ -151,9 +175,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // creates the panel
                     divTab.setAttribute("id",`product-${index}-tab-${i}`)
+                    divTab.classList.add("tabPanel")
                     divTab.classList.add("selected")
-                    divTab.innerHTML = `content for prices tab`
-                    chartPanel.appendChild(divTab)
+
+                    // populates with data to create prices chart
+                    const plainDiv = document.createElement("div")
+                    const chartCanvas = document.createElement("canvas")
+                    chartCanvas.setAttribute("id",`myChart-${product[0]}-prices`)
+                    
+                    plainDiv.appendChild(chartCanvas)
+                    divTab.appendChild(plainDiv)
+                    
 
                 } else if (i === 1) {
                     // creates the button
@@ -167,11 +199,19 @@ document.addEventListener("DOMContentLoaded", () => {
                         border-right:0;
                         border-radius:0;`)
 
-                    // creates the panel
-                    divTab.setAttribute("id",`product-${index}-tab-${i}`)
-                    divTab.classList.add("hidden")
-                    divTab.innerHTML = `content for % minimum wage tab`
-                    chartPanel.appendChild(divTab)
+                        // creates the panel
+                        divTab.setAttribute("id",`product-${index}-tab-${i}`)
+                        divTab.classList.add("tabPanel")
+                        divTab.classList.add("hidden")
+    
+                        // populates with data to create prices chart
+                        const plainDiv = document.createElement("div")
+                        const chartCanvas = document.createElement("canvas")
+                        chartCanvas.setAttribute("id",`myChart-${product[0]}-minWage`)
+                        
+                        plainDiv.appendChild(chartCanvas)
+                        divTab.appendChild(plainDiv)
+
 
                 } else if (i === 2) {
                     // creates the button
@@ -185,16 +225,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // creates the panel
                     divTab.setAttribute("id",`product-${index}-tab-${i}`)
+                    divTab.classList.add("tabPanel")
                     divTab.classList.add("hidden")
-                    divTab.innerHTML = `content for days of work tab`
-                    chartPanel.appendChild(divTab)
+
+                    // populates with data to create prices chart
+                    const plainDiv = document.createElement("div")
+                    const chartCanvas = document.createElement("canvas")
+                    chartCanvas.setAttribute("id",`myChart-${product[0]}-days`)
+                    
+                    plainDiv.appendChild(chartCanvas)
+                    divTab.appendChild(plainDiv)
+
 
                 }
                 
+                chartPanel.appendChild(divTab)
+                
                 navTabs.appendChild(btnTab)
             }
-            asideGraphs.appendChild(navTabs)
-            asideGraphs.appendChild(chartPanel)
+            asideCharts.appendChild(navTabs)
+            asideCharts.appendChild(chartPanel)
 
             // logic to set 'selected' when a tab is clicked
             navTabs.addEventListener("click",(e) => {
@@ -203,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 Object.values(buttons).forEach(btn => btn.classList.remove("selected"))
 
                 // lists all tab panels of the product and removes 'selected' class
-                const tabs = document.querySelectorAll(`.product-${index}-panel div`) 
+                const tabs = document.querySelectorAll(`.product-${index}-panel > div`) 
                 Object.values(tabs).forEach(tab => tab.classList.add("hidden"))
                 Object.values(tabs).forEach(tab => tab.classList.remove("selected"))
 
@@ -214,24 +264,16 @@ document.addEventListener("DOMContentLoaded", () => {
             })
 
             // appends asideInfo to div and div to container
-            div.appendChild(asideInfo)
-            div.appendChild(asideGraphs)
-            productsContainer.appendChild(div)
+            section.appendChild(asideInfo)
+            section.appendChild(asideCharts)
 
-            // const ul = document.createElement("ul")
-            // div.appendChild(ul)
-            // const productPrices = listPrices(product)
-            // productPrices.forEach((price)=>{
-            //     const li = document.createElement("li")
-            //     li.innerHTML = price;
-            //     ul.appendChild(li)
-            // })
+            productsContainer.appendChild(section)
+
 
         })
     }
 
     populateProducts()
-
 
     // creates a listener to the "start" button
     const btnStart = document.querySelector(".headline button")
@@ -247,58 +289,152 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("splash-screen").scrollIntoView();
     })
 
-    // formats the timestamp
-
-    const formattedTimestamp = (timestamp) => {
-        let unix_timestamp = exchangeRateResponse.timestamp
-        // Create a new JavaScript Date object based on the timestamp
-        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-        var date = new Date(unix_timestamp * 1000);
-        // Hours part from the timestamp
-        var hours = date.getHours();
-        // Minutes part from the timestamp
-        var minutes = "0" + date.getMinutes();
-        // Seconds part from the timestamp
-        var seconds = "0" + date.getSeconds();
-
-        // Will display time in 10:30:23 format
-        var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    }
+    fetchAndUpdate()
 
     // calculates the conversion
     function _convertCurrency(currency,cost) {
-        let rate = exchangeRatesStatic.quotes["USD" + currency]
+        let rate = currencies.quotes["USD" + currency] || 1 // in this case 1 represents USD to USD conversion
         return cost / rate
     }
 
     // returns the object of a product with converted prices 
-    function listPrices(product) {
+    function listPrices(product,format = true) {
         let prices = []
+        // if (product[0] === "mcchicken") console.log(product)
         Object.entries(product[1].prices).forEach((country) => {
-            prices.push(_convertCurrency(country[0],country[1]).toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-            }))
+            let countryPrice = {}
+            countryPrice[country[0]] = _convertCurrency(country[0],country[1])
+            if (format) {
+                countryPrice[country[0]] = countryPrice[country[0]].toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                })
+            }
+            prices.push(countryPrice)
         })
         return prices
     }
 
+    function percentageMinimumWage(product) {
+        let prices = listPrices(product,false)
+        let salariesUSD = []
+        let salaries = Object.entries(staticData.countries)
+        salaries.forEach((country)=> {
+            let countryMinWage = 0;
+            countryMinWage = _convertCurrency(Object.keys(country[1])[0],country[1][Object.keys(country[1])[0]])
+            salariesUSD.push(countryMinWage)
+        })
+        let percentage = []
+        for (let i = 0; i < salariesUSD.length; i++) {
+            let eachPercentage = {}
+            eachPercentage[Object.keys(prices[i])[0]] = ((prices[i][Object.keys(prices[i])[0]] / salariesUSD[i]) * 100).toFixed(2)
+            percentage.push(eachPercentage)
+        }
+        // console.log(`Percentage ${product[1].title}`,percentage)
+        return percentage
+    }
+
+
+    function days(product) {
+        let prices = listPrices(product,false)
+        let salariesUSD = []
+        let salaries = Object.entries(staticData.countries)
+        salaries.forEach((country)=> {
+            let countryMinWage = 0;
+            countryMinWage = _convertCurrency(Object.keys(country[1])[0],country[1][Object.keys(country[1])[0]])
+            salariesUSD.push(countryMinWage)
+        })
+        let days = []
+        for (let i = 0; i < salariesUSD.length; i++) {
+            let eachPercentage = {}
+            let perDay = (Object.values(prices[i]) / (salariesUSD[i] / 30)).toFixed(2)
+            eachPercentage[Object.keys(prices[i])[0]] = (Object.values(prices[i]) / (salariesUSD[i] / 30)).toFixed(2)
+            days.push(eachPercentage)
+        }
+        // console.log(`Days ${product[1].title}`,days)
+        return days
+    }
+
     // swapping country names
-    var i = 0;
-    var text = "USA";
-    document.querySelector(".headline h2 span").innerHTML = staticData.countries.length;
+    let i = 0;
+    let text = "USA";
+    let countriesNames = Object.keys(staticData.countries)
+    document.querySelector(".headline h2 span").innerHTML = countriesNames.length;
     function _getChangedText() {
-        i = (i + 1) % staticData.countries.length;
-        // console.log(countries[i]);
-        // console.log(i);
-        return text.replace(/USA/, staticData.countries[i]);
+        i = (i + 1) % countriesNames.length;
+        return text.replace(/USA/, countriesNames[i]);
     }
     function _changeText() {
-        var txt = _getChangedText();
-        // console.log(txt);
+        let txt = _getChangedText();
         document.querySelector(".headline h1 span").innerHTML = txt;
     }
     setInterval(_changeText, 2500);
 
 
+    function _renderChart(type,product) {
+
+        let showData = []
+        let showLabel = "";
+        if (type === "prices") {
+            listPrices(product,false).forEach(p=>{
+                Object.values(p).forEach((v)=>{
+                    showData.push(v)
+                })
+            })
+            showLabel = "Price in dollars";
+
+        } else if (type === "minWage") {
+            percentageMinimumWage(product,false).forEach(p=>{
+                Object.values(p).forEach((v)=>{
+                    showData.push(v)
+                })
+            })
+            showLabel = "Percentage";
+        } else if (type === "days") {
+            days(product,false).forEach(p=>{
+                Object.values(p).forEach((v)=>{
+                    showData.push(v)
+                })
+                
+            })
+            showLabel = "Days of labor";
+        } else {
+            return;
+        }
+
+        const ctx = document.getElementById(`myChart-${product[0]}-${type}`);
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                    labels: Object.keys(staticData.countries),
+                    datasets: [{
+                        label: showLabel,
+                        data: showData,
+                        borderWidth: 1
+                    }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                            beginAtZero: true
+                            }
+                        },
+                        backgroundColor: product[1].secondaryColor,
+                        hoverBackgroundColor: '#ffffff',
+                        borderColor: '#ff9900'
+                    }
+                });
+        }
+     
+        function createCharts() {
+            Object.entries(staticData.products).forEach((product) => {
+                _renderChart("prices",product)
+                _renderChart("minWage",product)
+                _renderChart("days",product)
+            })
+        }
+    
+        createCharts()
 });
+
