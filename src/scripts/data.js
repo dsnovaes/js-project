@@ -1,20 +1,20 @@
 export const countries = {
-    "Brazil": {
+    "🇧🇷 Brazil": {
         "BRL": 1212
     },
-    "China": {
+    "🇨🇳 China": {
         "CNY": 3872
     },
-    "Spain": {
+    "🇪🇸 Spain": {
         "EUR": 1050
     },
-    "India": {
+    "🇮🇳 India": {
         "INR": 9306
     },
-    "Russia": {
+    "🇷🇺 Russia": {
         "RUB": 13617
     },
-    "USA": {
+    "🇺🇸 USA": {
         "USD": 1276
     }
 }
@@ -98,5 +98,17 @@ export const products = {
         gridColor:"rgba(255,255,255,.5)",
         title: "Coke",
         subtitle: "1L (33oz) bottle"
+    }
+}
+export const staticExchangeRates = {
+    "success": true,
+    "timestamp": 1670486763,
+    "source": "USD",
+    "quotes": {
+        "USDBRL": 5.205399,
+        "USDEUR": 0.95047,
+        "USDINR": 82.32355,
+        "USDRUB": 62.765043,
+        "USDCNY": 6.971796
     }
 }

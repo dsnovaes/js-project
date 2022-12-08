@@ -1,23 +1,26 @@
 import * as staticData from "./scripts/data"
 import Chart from 'chart.js/auto';
+import * as API_KEY from './scripts/apiKey';
 
 document.addEventListener("DOMContentLoaded", () => {
-    // formats the timestamp
-    const formattedTimestamp = (timestamp) => {
-        // Create a new JavaScript Date object based on the timestamp
-        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-        let date = new Date(timestamp * 1000);
-        // Hours part from the timestamp
-        let hours = date.getHours();
-        // Minutes part from the timestamp
-        let minutes = "0" + date.getMinutes();
-        // Seconds part from the timestamp
-        let seconds = "0" + date.getSeconds();
-        // Will display time in 10:30:23 format
-        let formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-        document.querySelector("#exchangeStatus strong").innerHTML = formattedTime;
-        return formattedTime;
-    }
+
+    const navProducts = document.getElementById("navProducts")
+    const btnScrollUp = document.getElementById("scrollUp")
+    btnScrollUp.addEventListener("click",function (e) {
+        e.preventDefault();
+        document.querySelector("#splash-screen").scrollIntoView();
+    })
+
+    window.addEventListener("scroll", () => {
+        let element = document.querySelector("#splash-screen")
+        var offset = element.getBoundingClientRect().top - element.offsetParent.getBoundingClientRect().top;
+        const top = window.pageYOffset + window.innerHeight - offset;
+        if (top > 1600) {
+            btnScrollUp.style.display = "block"
+        } else {
+            btnScrollUp.style.display = "none"
+        }
+    }, { passive: false });
 
     let currencies = JSON.parse(localStorage.getItem("currencies")) || {};
 
@@ -25,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let myCookie = document.cookie;
 
         if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) {
-            console.log("cookie found", myCookie)
+            console.log("cookie found:", myCookie)
         } else {
             console.warn("cookie not found")
             const today = new Date();
@@ -38,20 +41,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (shouldForce) {
             let myHeaders = new Headers();
-            myHeaders.append("apikey", "i6Gvyy6na70P0E5YGt4d2FyO7dlu59mk");
-
+            myHeaders.append("apikey", API_KEY.API_KEY);
             let requestOptions = {
                 method: 'GET',
                 redirect: 'follow',
                 headers: myHeaders
             };
-
             await fetch("https://api.apilayer.com/currency_data/live?source=USD&currencies=BRL%2CEUR%2CINR%2CRUB%2CCNY", requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     console.log("fetching api and setting the results to local storage")
                     localStorage.setItem('currencies', JSON.stringify(result))
-                    formattedTimestamp(currencies.timestamp)
                     console.log("exchange rates updated in local storage")
                     return JSON.stringify(result)
                 })
@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnUpdate.addEventListener("click",(e)=>{
         e.preventDefault();
         currencies = fetchAndUpdate(true)
+        localStorage.setItem('currencies', JSON.stringify(currencies))
     })
 
     // populate section "products"
@@ -76,6 +77,13 @@ document.addEventListener("DOMContentLoaded", () => {
         productsContainer.innerHTML = "";
 
         Object.entries(staticData.products).forEach((product,index) => {
+
+            // creates a button in the navProducts
+            const btnNavProduct = document.createElement("button")
+            btnNavProduct.innerHTML = `${index+1} <span data-id=product-${index}>${product[1].title}</span>`
+            btnNavProduct.setAttribute("data-id",`product-${index}`)
+            navProducts.appendChild(btnNavProduct)
+
             // creates the main div of a product
             const section = document.createElement("section");
             section.setAttribute("id",`product-${index}`)
@@ -238,19 +246,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // logic to set 'selected' when a tab is clicked
             navTabs.addEventListener("click",(e) => {
-                // lists all tabs of the product and removes 'selected' class
-                const buttons = document.querySelectorAll(`#product-${index} nav button`) 
-                Object.values(buttons).forEach(btn => btn.classList.remove("selected"))
+                if (e.target.tagName === "BUTTON") {
+                    // lists all tabs of the product and removes 'selected' class
+                    const buttons = document.querySelectorAll(`#product-${index} nav button`) 
+                    Object.values(buttons).forEach(btn => btn.classList.remove("selected"))
 
-                // lists all tab panels of the product and removes 'selected' class
-                const tabs = document.querySelectorAll(`.product-${index}-panel > div`) 
-                Object.values(tabs).forEach(tab => tab.classList.add("hidden"))
-                Object.values(tabs).forEach(tab => tab.classList.remove("selected"))
+                    // lists all tab panels of the product and removes 'selected' class
+                    const tabs = document.querySelectorAll(`.product-${index}-panel > div`) 
+                    Object.values(tabs).forEach(tab => tab.classList.add("hidden"))
+                    Object.values(tabs).forEach(tab => tab.classList.remove("selected"))
 
-                // enables 'selected' only to the clicked tab and panel
-                e.target.classList.add("selected")
-                document.getElementById(e.path[0].attributes[0].value).classList.remove("hidden")
-                document.getElementById(e.path[0].attributes[0].value).classList.add("selected")
+                    // enables 'selected' only to the clicked tab and panel
+                    e.target.classList.add("selected")
+                    document.getElementById(e.path[0].attributes[0].value).classList.remove("hidden")
+                    document.getElementById(e.path[0].attributes[0].value).classList.add("selected")
+                }
+            })
+
+            navProducts.addEventListener("click",(e) => {
+                if (e.target.tagName === "BUTTON" || e.target.tagName === "SPAN") {
+                    e.preventDefault()
+                    let anchor = e.target.getAttribute('data-id')
+                    if (anchor === undefined) console.error(e.target);
+                    document.getElementById(anchor).scrollIntoView()
+                }
             })
 
             // appends asideInfo to div and div to container
@@ -283,14 +302,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // calculates the conversion
     function _convertCurrency(currency,cost) {
-        let rate = currencies.quotes["USD" + currency] || 1 // in this case 1 represents USD to USD conversion
+        let exchangeRates = currencies.quotes || staticData.staticExchangeRates.quotes
+        let rate = exchangeRates["USD" + currency] || 1 // in this case 1 represents USD to USD conversion
         return cost / rate
     }
 
-    // returns the object of a product with converted prices 
     function listPrices(product,format = true) {
         let prices = []
-        // if (product[0] === "mcchicken") console.log(product)
         Object.entries(product[1].prices).forEach((country) => {
             let countryPrice = {}
             countryPrice[country[0]] = _convertCurrency(country[0],country[1])
@@ -320,7 +338,6 @@ document.addEventListener("DOMContentLoaded", () => {
             eachPercentage[Object.keys(prices[i])[0]] = ((prices[i][Object.keys(prices[i])[0]] / salariesUSD[i]) * 100).toFixed(2)
             percentage.push(eachPercentage)
         }
-        // console.log(`Percentage ${product[1].title}`,percentage)
         return percentage
     }
 
@@ -341,11 +358,10 @@ document.addEventListener("DOMContentLoaded", () => {
             eachPercentage[Object.keys(prices[i])[0]] = (Object.values(prices[i]) / (salariesUSD[i] / 30)).toFixed(2)
             days.push(eachPercentage)
         }
-        // console.log(`Days ${product[1].title}`,days)
+        
         return days
     }
 
-    // swapping country names
     let i = 0;
     let text = "USA";
     let countriesNames = Object.keys(staticData.countries)
@@ -362,7 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     function _renderChart(type,product) {
-
         let showData = []
         let showTitle = "";
         let showLabel = "";
@@ -390,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 })
                 
             })
-            showTitle = "Days of labor to buy the product";
+            showTitle = "Days of labor to afford the product";
             showLabel = "Days"
         } else {
             return;
@@ -403,7 +418,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const ctx = document.getElementById(`myChart-${product[0]}-${type}`);
 
         let delayed;
-
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -461,7 +475,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             delay: (context) => {
                                 let delay = 0;
                                 if (context.type === 'data' && context.mode === 'default' && !delayed) {
-                                delay = context.dataIndex * 300 + context.datasetIndex * 100;
+                                    delay = context.dataIndex * 300 + context.datasetIndex * 100;
                                 }
                                 return delay;
                             },
