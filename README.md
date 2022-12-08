@@ -33,7 +33,7 @@ Navigate through the slides to see the prices of the product in each country. Cl
 
 ## Technical Implementation
 To save resources and be more efficient the exchange rates are updated only once per day and saved to the user's browser, as an object in the local storage.
-The application checks if there is a cookie called "currenciesUpdated" in the user's browser and if there isn't, then the cookie is created with the expirecy of 1 day, the API is fetched and the results are saved to the local storage.
+The application checks if there is a cookie called "currenciesUpdated" in the user's browser and if there isn't, then the cookie is created with the expiry of 1 day, the API is fetched and the results are saved to the local storage.
 If the user loads the page on the next day the cookie won't exist and the exchange rates will be updated.
 
 ```javascript
@@ -81,7 +81,11 @@ If the user loads the page on the next day the cookie won't exist and the exchan
 ```
 
 ## Future Features
-### Feedback from the user
+### Data Analytics
 - Implementation of some kind of web analytics, such as Google Analytics
+
+### Feedback from the user
 - Implementation of a contact form so the user can give suggestions of new products to be compared
+
+### User Experience
 - Add related news so the user can read more about the prices of a product around the world
