@@ -318,6 +318,10 @@ h2 {
 }
 
 .tabPanel {
+  transition: none;
+}
+
+.tabPanel {
   display: flex;
   align-items: center;
   justify-content: center;

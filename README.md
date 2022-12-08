@@ -1,4 +1,4 @@
-# (Project name)
+# Libra
 
 ## Background
 Where is McChicken cheapest to buy? 
@@ -21,7 +21,7 @@ Navigate through the slides to see the prices of the product in each country. Cl
 HTML, CSS and Javascript
 
 ## Libraries
-[D3] (https://d3js.org/)
+Chart.js
 
 ## Technical Implementation
 

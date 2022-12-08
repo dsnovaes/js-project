@@ -30,6 +30,8 @@ export const products = {
         },
         primaryColor: "#FFC72C",
         secondaryColor: "#27251F",
+        borderColor: "rgba(0,0,0,0.5)",
+        gridColor:"rgba(0,0,0,.25)",
         title: "Mc Chicken",
         subtitle: "Burger only, not the meal"
     },
@@ -44,6 +46,8 @@ export const products = {
         },
         primaryColor: "#fff",
         secondaryColor: "#EB0A1E",
+        borderColor: "rgba(0,0,0,0.5)",
+        gridColor:"rgba(0,0,0,.25)",
         title: "Toyota Corolla",
         subtitle: "2022 model, entry version"
     },
@@ -58,6 +62,8 @@ export const products = {
         },
         primaryColor: "#C41230",
         secondaryColor: "#fff",
+        borderColor: "rgba(0,0,0,0.5)",
+        gridColor:"rgba(255,255,255,.25)",
         title: "Levi's Jeans",
         subtitle: "501® Original Fit Jeans"
     },
@@ -72,6 +78,8 @@ export const products = {
         },
         primaryColor: "#000",
         secondaryColor: "#fff",
+        borderColor: "rgba(0,0,0,0.5)",
+        gridColor:"rgba(255,255,255,.25)",
         title: "iPhone",
         subtitle: "iPhone 14 Pro 128GB"
     },
@@ -86,6 +94,8 @@ export const products = {
         },
         primaryColor: "#F40009",
         secondaryColor: "#fff",
+        borderColor: "rgba(0,0,0,0.5)",
+        gridColor:"rgba(255,255,255,.5)",
         title: "Coke",
         subtitle: "1L (33oz) bottle"
     }

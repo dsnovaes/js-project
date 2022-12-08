@@ -1,5 +1,5 @@
 {
-  "name": "js-project",
+  "name": "libra",
   "version": "1.0.0",
   "description": "This project compares prices of some products in 6 different countries: - Brazil - China - India - Spain - Russia - USA",
   "main": "index.js",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dsnovaes/js-project.git"
+    "url": "git+https://github.com/dsnovaes/libra.git"
   },
   "keywords": [],
   "author": "Diego Novaes",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dsnovaes/js-project/issues"
+    "url": "https://github.com/dsnovaes/libra/issues"
   },
-  "homepage": "https://github.com/dsnovaes/js-project#readme",
+  "homepage": "https://github.com/dsnovaes/libra#readme",
   "dependencies": {
     "@babel/core": "^7.20.5",
     "@babel/preset-env": "^7.20.2",

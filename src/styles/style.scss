@@ -218,6 +218,9 @@ h2 {
     display: block;
 }
 .tabPanel {
+    transition: none;
+}
+.tabPanel {
     display: flex;
     align-items: center;
     justify-content: center;

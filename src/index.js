@@ -70,8 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.warn("exchange rates (not) updated")
             return currencies
         }
-
-        
     }
 
     let btnUpdate = document.querySelector("header button")
@@ -215,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 } else if (i === 2) {
                     // creates the button
-                    btnTab.innerHTML = "days to buy"
+                    btnTab.innerHTML = "days of labor"
                     btnTab.classList.add(`tab-${index}`)
                     btnTab.setAttribute("style",`
                         background-color:${product[1].primaryColor};
@@ -374,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function _renderChart(type,product) {
 
         let showData = []
+        let showTitle = "";
         let showLabel = "";
         if (type === "prices") {
             listPrices(product,false).forEach(p=>{
@@ -381,48 +380,119 @@ document.addEventListener("DOMContentLoaded", () => {
                     showData.push(v)
                 })
             })
-            showLabel = "Price in dollars";
+            showTitle = "Price in Dollars";
+            showLabel = "USD"
 
         } else if (type === "minWage") {
-            percentageMinimumWage(product,false).forEach(p=>{
+            percentageMinimumWage(product).forEach(p=>{
                 Object.values(p).forEach((v)=>{
                     showData.push(v)
                 })
             })
-            showLabel = "Percentage";
+            showTitle = "Percentage of the minimum wage";
+            showLabel = "%"
         } else if (type === "days") {
-            days(product,false).forEach(p=>{
+            days(product).forEach(p=>{
                 Object.values(p).forEach((v)=>{
                     showData.push(v)
                 })
                 
             })
-            showLabel = "Days of labor";
+            showTitle = "Days of labor to buy the product";
+            showLabel = "Days"
         } else {
             return;
         }
 
+        const labels = Object.keys(staticData.countries);
+        labels.map(country=>{
+            return country.toLowerCase()
+        })
         const ctx = document.getElementById(`myChart-${product[0]}-${type}`);
+
+        let delayed;
 
                 new Chart(ctx, {
                     type: 'bar',
                     data: {
-                    labels: Object.keys(staticData.countries),
+                    labels: labels,
                     datasets: [{
                         label: showLabel,
                         data: showData,
-                        borderWidth: 1
+                        borderWidth: 1,
+                        backgroundColor: product[1].secondaryColor,
+                        hoverBackgroundColor: '#ffffff',
+                        borderColor: product[1].borderColor, 
                     }]
                     },
                     options: {
                         scales: {
                             y: {
-                            beginAtZero: true
+                                beginAtZero: true,
+                                grid: {
+                                    zeroLineColor: product[1].secondaryColor,
+                                    color: product[1].gridColor
+                                },
+                                border: {
+                                    color: product[1].secondaryColor
+                                },
+                                ticks: {
+                                    color: product[1].secondaryColor,
+                                    font: {
+                                        size: 18
+                                    }
+                                }
+                            },
+                            x: {
+                                drawTicks: true,
+                                beginAtZero: true,
+                                grid: {
+                                    zeroLineColor: product[1].secondaryColor,
+                                    color: product[1].gridColor
+                                },
+                                border: {
+                                    color: product[1].secondaryColor
+                                },
+                                ticks: {
+                                    color: product[1].secondaryColor,
+                                    font: {
+                                        size: 18
+                                    }
+                                },
+                                mirror: true
                             }
                         },
-                        backgroundColor: product[1].secondaryColor,
-                        hoverBackgroundColor: '#ffffff',
-                        borderColor: '#ff9900'
+                        animation: {
+                            onComplete: () => {
+                                delayed = true;
+                            },
+                            delay: (context) => {
+                                let delay = 0;
+                                if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                                delay = context.dataIndex * 300 + context.datasetIndex * 100;
+                                }
+                                return delay;
+                            },
+                        },
+                        plugins:
+                        {
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 12
+                                    },
+                                    color: product[1].secondaryColor
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: showTitle,
+                                font: {
+                                    size: 24
+                                },
+                                color: product[1].secondaryColor
+                            }
+                        }
                     }
                 });
         }
