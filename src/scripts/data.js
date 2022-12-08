@@ -100,6 +100,3 @@ export const products = {
         subtitle: "1L (33oz) bottle"
     }
 }
-
-// national average minimum wage: 22 CNY per hour
-// national average is about 5000 CNY per month

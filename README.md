@@ -21,7 +21,7 @@ Navigate through the slides to see the prices of the product in each country. Cl
 HTML, CSS and Javascript
 
 ## Libraries
-Chart.js
+[Chart.js](https://www.chartjs.org/)
 
 ## Technical Implementation
 

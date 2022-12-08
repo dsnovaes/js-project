@@ -22,28 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
     let currencies = JSON.parse(localStorage.getItem("currencies")) || {};
 
     async function fetchAndUpdate(shouldForce = false) {
-
         let myCookie = document.cookie;
 
-        // checks if there is a cookie
         if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) {
-            // if there's a cookie, then do nothing
             console.log("cookie found", myCookie)
-            // console.log("currencies before the fetch",JSON.stringify(currencies))
         } else {
-            // if there isn't a cookie, creates the cookie 
             console.warn("cookie not found")
-            const end = new Date();
-            end.setHours(23, 59, 59, 999);
-            const end2 = new Date();
-            end2.setDate(end.getDate() + 1)
-            document.cookie = `currenciesUpdated=true;expires=${end2}; path=/`;
-            // document.cookie = "currenciesUpdated=true;expires=;path=/";
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1)
+            document.cookie = `currenciesUpdated=true;expires=${tomorrow}; path=/`;
             if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) { console.warn("cookie created") }
+            shouldForce = true;
         }
 
-        // if shouldForce is set to true then fetch the api 
-        // and update currencies in the local storage
         if (shouldForce) {
             let myHeaders = new Headers();
             myHeaders.append("apikey", "i6Gvyy6na70P0E5YGt4d2FyO7dlu59mk");
