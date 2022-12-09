@@ -53,6 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.log("fetching api and setting the results to local storage")
                     localStorage.setItem('currencies', JSON.stringify(result))
                     console.log("exchange rates updated in local storage")
+                    populateProducts()
+                    createCharts()
                     return JSON.stringify(result)
                 })
                 .catch((error) => {
@@ -75,6 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function populateProducts() {
         const productsContainer = document.getElementById("products")
         productsContainer.innerHTML = "";
+        navProducts.innerHTML = '<button data-id="splash-screen"><i class="fa-solid fa-house"></i> <span data-id="splash-screen">Navigate to the top</span></button>';
+        
 
         Object.entries(staticData.products).forEach((product,index) => {
 

@@ -87,7 +87,7 @@ export const products = {
         prices: {
             "BRL": 3.99,
             "CNY": 9.975, // 4-pack price, divided by 4 (39.9/4)
-            "EUR": 1.95,
+            "EUR": 1.45,
             "INR": 65,
             "RUB": 51.85,
             "USD": 2.80
