@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // creates a listener to the "start" button
     const btnStart = document.querySelector(".headline button")
-    const initialProduct = document.getElementById("product-0")
+    const initialProduct = document.getElementById("products")
     btnStart.addEventListener("click",function (e) {
         e.preventDefault();
         initialProduct.scrollIntoView();

@@ -44,11 +44,15 @@ body {
     border:1px solid rgba(255,255,255,0.25);
     background-color: var(--color-transparent-black);
     transition: 0.25s all;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 #navProducts button:hover {
     width: auto;
     padding: 0 30px;
-    background-color: var(--color-primary);
+    background-color: var(--color-transparent-black);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 #navProducts button span {
     display: none;
