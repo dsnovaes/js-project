@@ -27,15 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
     async function fetchAndUpdate(shouldForce = false) {
         let myCookie = document.cookie;
 
-        if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) {
-            console.log("cookie found:", myCookie)
-        } else {
-            console.warn("cookie not found")
+        if (myCookie.split(";").indexOf("currenciesUpdated=true") === -1) {
             const today = new Date();
             const tomorrow = new Date();
             tomorrow.setDate(today.getDate() + 1)
             document.cookie = `currenciesUpdated=true;expires=${tomorrow}; path=/`;
-            if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) { console.warn("cookie created") }
+            // if (myCookie.split(";").indexOf("currenciesUpdated=true") !== -1) { console.warn("cookie created") }
             shouldForce = true;
         }
 
@@ -50,9 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
             await fetch("https://api.apilayer.com/currency_data/live?source=USD&currencies=BRL%2CEUR%2CINR%2CRUB%2CCNY", requestOptions)
                 .then(response => response.json())
                 .then(result => {
-                    console.log("fetching api and setting the results to local storage")
                     localStorage.setItem('currencies', JSON.stringify(result))
-                    console.log("exchange rates updated in local storage")
                     populateProducts()
                     createCharts()
                     return JSON.stringify(result)
@@ -61,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.error('error', error)
                 });
         } else {
-            console.warn("exchange rates (not) updated")
             return currencies
         }
     }
@@ -262,8 +256,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // enables 'selected' only to the clicked tab and panel
                     e.target.classList.add("selected")
-                    document.getElementById(e.path[0].attributes[0].value).classList.remove("hidden")
-                    document.getElementById(e.path[0].attributes[0].value).classList.add("selected")
+                    document.getElementById(e.srcElement.attributes[0].value).classList.remove("hidden")
+                    document.getElementById(e.srcElement.attributes[0].value).classList.add("selected")
                 }
             })
 
@@ -271,7 +265,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (e.target.tagName === "BUTTON" || e.target.tagName === "SPAN") {
                     e.preventDefault()
                     let anchor = e.target.getAttribute('data-id')
-                    if (anchor === undefined) console.error(e.target);
                     document.getElementById(anchor).scrollIntoView()
                 }
             })
